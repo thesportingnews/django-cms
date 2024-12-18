@@ -191,10 +191,9 @@ def get_object_preview_url(obj: models.Model, language: str = None) -> str:
     return url
 
 def add_language_querystring_param(url: str, language: str) -> str:
-    from requests.models import PreparedRequest
-    req = PreparedRequest()
-    req.prepare_url(url, { "language": language })
-    return req.url
+    if url.endswith("/"):
+        return f"{url}?language={language}"
+    return f"{url}&langauge={language}"
 
 def get_object_structure_url(obj: models.Model, language: str = None) -> str:
     """
