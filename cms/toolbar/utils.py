@@ -172,6 +172,7 @@ def get_object_edit_url(obj: models.Model, language: str = None) -> str:
 
     with force_language(language):
         url = admin_reverse('cms_placeholder_render_object_edit', args=[content_type.pk, obj.pk])
+        url = add_language_querystring_param(url, language)
     if get_cms_setting('ENDPOINT_LIVE_URL_QUERYSTRING_PARAM_ENABLED'):
         url = add_live_url_querystring_param(obj, url, language)
     return url
@@ -192,10 +193,16 @@ def get_object_preview_url(obj: models.Model, language: str = None) -> str:
 
     with force_language(language):
         url = admin_reverse('cms_placeholder_render_object_preview', args=[content_type.pk, obj.pk])
+        url = add_language_querystring_param(url, language)
     if get_cms_setting('ENDPOINT_LIVE_URL_QUERYSTRING_PARAM_ENABLED'):
         url = add_live_url_querystring_param(obj, url, language)
     return url
 
+def add_language_querystring_param(url: str, language: str) -> str:
+    from requests.models import PreparedRequest
+    req = PreparedRequest()
+    req.prepare_url(url, { "language": language })
+    return req.url
 
 def get_object_structure_url(obj: models.Model, language: str = None) -> str:
     """
